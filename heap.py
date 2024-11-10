@@ -1,3 +1,5 @@
+import tkinter as tk
+
 class Heap:
     def __init__(self) -> None:
         self.vector = [None]
@@ -49,15 +51,63 @@ class Heap:
             self.down(index)
 
     def get_high_priority(self):
-        return self.vector[1]
+        return f'Item de maior prioridade {self.vector[1]}'
 
-    def heap_sort(self):
+
+    def heap_sort(self,canvas,root):
+        
         for m in range(self.size, 1, -1):
             self.vector[1], self.vector[m] = self.vector[m], self.vector[1]
+        
+            self.display_heap(canvas)
+            root.update()
+            root.after(700)
+
             self.size -= 1
             self.down(1)
 
         self.size = len(self.vector) - 1 
 
-    def display_heap(self):
-        return self.vector[1:]
+    
+
+    def display_heap(self, canvas):
+        
+        def draw_tree(index, x, y, level):
+            if index > self.size:
+                return
+            
+            node_value = self.vector[index]
+            radius = 20  
+            node_x = x
+            node_y = y
+
+
+            color = "lightblue"
+            canvas.create_oval(node_x - radius, node_y - radius, node_x + radius, node_y + radius, fill=color)
+            canvas.create_text(node_x, node_y, text=str(node_value), font=("Arial", 12))
+
+            
+            left_child_index = 2 * index
+            right_child_index = 2 * index + 1
+
+            
+            horizontal_spacing = 150 // (level + 1)  
+            vertical_spacing = 80 
+
+            if left_child_index <= self.size:
+               
+                canvas.create_line(node_x, node_y + radius, x - horizontal_spacing, y + vertical_spacing, arrow=tk.LAST)
+                draw_tree(left_child_index, x - horizontal_spacing, y + vertical_spacing, level + 1)
+
+            if right_child_index <= self.size:
+                
+                canvas.create_line(node_x, node_y + radius, x + horizontal_spacing, y + vertical_spacing, arrow=tk.LAST)
+                draw_tree(right_child_index, x + horizontal_spacing, y + vertical_spacing, level + 1)
+
+
+
+        draw_tree(1, 400, 40, 0)
+       
+        canvas.update()
+        canvas.after(500)
+    
